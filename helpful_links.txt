@@ -1,1 +1,2 @@
 https://docs.sqlalchemy.org/en/14/core/type_basics.html
+https://stackoverflow.com/questions/25324113/email-validation-from-wtform-using-flask

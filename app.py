@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User, Tweet
-from forms import UserForm, TweetForm
+from models import connect_db, db, User
+from forms import RegisterForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -14,4 +14,42 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
 
+
 toolbar = DebugToolbarExtension(app)
+
+#****************
+#Routes logic
+#****************
+
+@app.route('/')
+def root_route():
+    """Root Route that will redirect to the Register page"""
+    return redirect('/register')
+
+@app.route('/secret')
+def secret_route():
+    """Route for only registered users"""
+    return render_template('secrets.html')
+
+@app.route('/register', methods=["GET", "POST"])
+def register_form():
+    """Displays the registration form for users"""
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        email = form.email.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        new_user = User.register(username, password, email, first_name, last_name)
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            form.username.errors.append('Username or email taken.  Please pick another')
+            return render_template('register.html', form=form)
+        session['username'] = new_user.username
+        flash("Welcome, you've successfully registered!")
+        return redirect('/secret')
+    return render_template('register.html', form=form)
+
