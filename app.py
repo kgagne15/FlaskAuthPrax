@@ -29,7 +29,19 @@ def root_route():
 @app.route('/secret')
 def secret_route():
     """Route for only registered users"""
+    if 'username' not in session:
+        flash("Please login first")
+        return redirect('/login')
     return render_template('secrets.html')
+
+@app.route('/users/<username>')
+def user_info(username):
+    """Show info about user after login"""
+    if 'username' not in session:
+        flash("Please login first")
+        return redirect('/login')
+    user = User.query.get_or_404(username)
+    return render_template('user_info.html', user=user)
 
 @app.route('/register', methods=["GET", "POST"])
 def register_form():
@@ -50,7 +62,7 @@ def register_form():
             return render_template('register.html', form=form)
         session['username'] = new_user.username
         flash("Welcome, you've successfully registered!")
-        return redirect('/secret')
+        return redirect(f'/users/{new_user.username}')
     return render_template('register.html', form=form)
 
 @app.route('/login', methods=["GET", "POST"])
@@ -63,8 +75,15 @@ def login_form():
 
         user = User.authenticate(username, password)
         if user:
-            flash(f'Welcome Back, {user.username}!')
-            return redirect('/secret')
+            # flash(f'Welcome Back, {user.username}!')
+            session['username'] = user.username
+            return redirect(f'/users/{user.username}')
         else:
             form.username.errors = ['Invalid username/password']
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout_user():
+    session.pop('username')
+    flash("Goodbye!")
+    return redirect('/')
