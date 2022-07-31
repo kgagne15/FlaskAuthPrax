@@ -23,3 +23,9 @@ class LoginForm(FlaskForm):
 
     username = StringField("Username", validators=[InputRequired(message="You must enter a username")])
     password = PasswordField("Password", validators=[InputRequired(message="You must enter a password")])
+
+class FeedbackForm(FlaskForm):
+    """Form for user feedback"""
+
+    title = StringField("Title", validators=[InputRequired(message="You must enter a title")])
+    content = StringField("Content", validators=[InputRequired(message="You must enter some content")])

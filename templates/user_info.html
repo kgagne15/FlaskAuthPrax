@@ -18,4 +18,31 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                {% for f in feedback %}
+                <h2><a href="/feedback/{{f.id}}/update">{{f.title}}</a></h2>
+                <p>{{f.content}}</p>
+                <form style="display:inline;" action="/feedback/{{f.id}}/delete" method="POST">
+                    <button class="btn btn-sm btn-danger mb-5">X</button>
+                  </form>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <form action="/users/{{user.username}}/feedback/add">
+            <button>Add Feedback</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/users/{{user.username}}/delete" method="POST">
+            <button>Delete Account</button>
+        </form>
+    </div>
+
 {% endblock %}
