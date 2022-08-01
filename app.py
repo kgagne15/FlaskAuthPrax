@@ -76,7 +76,6 @@ def login_form():
 
         user = User.authenticate(username, password)
         if user:
-            # flash(f'Welcome Back, {user.username}!')
             session['username'] = user.username
             return redirect(f'/users/{user.username}')
         else:
